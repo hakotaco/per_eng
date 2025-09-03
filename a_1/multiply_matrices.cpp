@@ -3,43 +3,41 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 /**
  * Prints usage information
  */
 void printUsage(const char *programName) {
-  std::cout << "Usage: " << programName << " -n <matrix_size>" << std::endl;
-  std::cout << "Example: " << programName << " -n 3" << std::endl;
+  std::cout << "Usage: " << programName << " -f <input_file>" << std::endl;
+  std::cout << "Example: " << programName << " -f example.txt" << std::endl;
 }
 
 /**
- * Parses command line arguments to get matrix size
+ * Reads filename from command line arguments.
  */
-int parseArguments(int argc, char *argv[]) {
+std::string readFilename(int argc, char **argv) {
   if (argc != 3) {
-    return -1;
+    return std::string();
   }
 
-  if (strcmp(argv[1], "-n") != 0) {
-    return -1;
+  if (strcmp(argv[1], "-f") != 0) {
+    return std::string();
   }
 
-  int N = atoi(argv[2]);
-  if (N <= 0) {
-    return -1;
-  }
+  std::string filename = argv[2];
 
-  return N;
+  return filename;
 }
 
 /**
- * Reads a square matrix of size N from standard input
+ * Reads a square matrix of size N from istream is
  */
-std::vector<std::vector<double>> readMatrix(int N) {
+std::vector<std::vector<double>> readMatrix(int N, std::ifstream &inputStream) {
   std::vector<std::vector<double>> matrix(N, std::vector<double>(N));
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
-      std::cin >> matrix[i][j];
+      inputStream >> matrix[i][j];
     }
   }
   return matrix;
@@ -80,25 +78,38 @@ void printMatrix(const std::vector<std::vector<double>> &matrix, int N) {
 }
 
 int main(int argc, char *argv[]) {
-  int N = parseArguments(argc, argv);
+  int N;
+  std::string filename = readFilename(argc, argv);
 
-  if (N == -1) {
+  if (filename.empty()) {
     printUsage(argv[0]);
     return 1;
   }
 
+  std::ifstream inputStream(filename);
+
+  if (!inputStream) {
+    std::cout << "Could not open file " << filename << std::endl;
+    inputStream.close();
+    return 1;
+  }
+
+
+  inputStream >> N;
+
   std::cout << "Matrix size: " << N << "x" << N << std::endl;
 
   std::cout << "Enter matrix A (" << N << "x" << N << "):" << std::endl;
-  std::vector<std::vector<double>> A = readMatrix(N);
+  std::vector<std::vector<double>> A = readMatrix(N, inputStream);
 
   std::cout << "Enter matrix B (" << N << "x" << N << "):" << std::endl;
-  std::vector<std::vector<double>> B = readMatrix(N);
+  std::vector<std::vector<double>> B = readMatrix(N, inputStream);
 
   std::vector<std::vector<double>> C = multiplyMatrices(A, B, N);
 
   std::cout << "\nResult matrix C = A * B:" << std::endl;
   printMatrix(C, N);
 
+  inputStream.close();
   return 0;
 }

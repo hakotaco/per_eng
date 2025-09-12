@@ -1,1 +1,4 @@
 multiply_matrices
+test_cases/*.txt
+gen_test_cases
+perf.data

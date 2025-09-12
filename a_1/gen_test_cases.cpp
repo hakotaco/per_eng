@@ -10,7 +10,7 @@ int main() {
   std::filesystem::create_directory("test_cases");
 
   // Define test case sizes
-  std::vector<int> sizes = {2, 3, 4, 5, 10};
+  std::vector<int> sizes = {3, 10, 100, 1000};
 
   std::random_device rd;
   std::mt19937 gen(rd());

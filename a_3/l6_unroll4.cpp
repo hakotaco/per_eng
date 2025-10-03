@@ -21,7 +21,6 @@ int main () {
   double *a = (double *)calloc(n, sizeof(double));
   for (int i=0; i<10000; i++) {
     sum = sqsum(a, n);
-    return 0;
-}
+  }
   return 0;
 }
